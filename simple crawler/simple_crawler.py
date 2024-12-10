@@ -62,5 +62,5 @@ class WebCrawler:
         print(f"Crawled {len(self.visited)} pages.")
 
 # Example usage
-crawler = WebCrawler(base_url="https://en.wikipedia.org/wiki/Main_Page", max_pages=20)
+crawler = WebCrawler(base_url="https://cadesignbase.dk/", max_pages=10)
 crawler.crawl()
