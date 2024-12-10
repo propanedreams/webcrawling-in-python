@@ -1,2 +1,3 @@
 .env
 .venv
+visited_sites.db
