@@ -1,3 +1,4 @@
 .env
 .venv
 visited_sites.db
+visited_sites.csv
