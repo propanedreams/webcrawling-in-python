@@ -87,5 +87,5 @@ class WebCrawler:
         self.conn.close()
 
 # Example usage
-crawler = WebCrawler(base_url="https://cadesignbase.dk/", max_pages=10)
+crawler = WebCrawler(base_url="https://github.com/propanedreams", max_pages=10)
 crawler.crawl()
