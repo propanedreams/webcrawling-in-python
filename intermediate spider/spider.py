@@ -24,35 +24,50 @@ class WebCrawler:
                 title TEXT,
                 meta_description TEXT,
                 h1_tags TEXT,
+                links TEXT,
+                images TEXT,
+                tables TEXT,
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         ''')
         conn.commit()
         return conn
 
-    def save_page_data_to_db(self, url, title, meta_description, h1_tags):
+    def save_page_data_to_db(self, url, title, meta_description, h1_tags, links, images, tables):
         try:
             cursor = self.conn.cursor()
             cursor.execute('''
-                INSERT OR IGNORE INTO visited_sites (url, title, meta_description, h1_tags) 
-                VALUES (?, ?, ?, ?)
-            ''', (url, title, meta_description, h1_tags))
+                INSERT OR IGNORE INTO visited_sites (url, title, meta_description, h1_tags, links, images, tables) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (url, title, meta_description, h1_tags, links, images, tables))
             self.conn.commit()
         except sqlite3.Error as e:
             print(f"Database error: {e}")
 
     def extract_page_data(self, soup):
-        """Extracts title, meta description, and h1 tags from a BeautifulSoup object."""
+        """Extracts title, meta description, H1 tags, links, images, and tables from a BeautifulSoup object."""
+        # Extract title
         title = soup.title.string.strip() if soup.title else None
 
+        # Extract meta description
         meta_description = None
         meta_tag = soup.find("meta", attrs={"name": "description"})
         if meta_tag and "content" in meta_tag.attrs:
             meta_description = meta_tag["content"].strip()
 
+        # Extract H1 tags
         h1_tags = ", ".join([h1.get_text(strip=True) for h1 in soup.find_all("h1")])
 
-        return title, meta_description, h1_tags
+        # Extract links
+        links = ", ".join([a['href'] for a in soup.find_all('a', href=True) if a['href'].startswith("http")])
+
+        # Extract image sources
+        images = ", ".join([img['src'] for img in soup.find_all('img', src=True)])
+
+        # Extract tables (as plain text)
+        tables = "; ".join([str(table.get_text(strip=True)) for table in soup.find_all("table")])
+
+        return title, meta_description, h1_tags, links, images, tables
 
     def is_allowed_by_robots(self, url):
         parsed_url = urlparse(url)
@@ -92,8 +107,8 @@ class WebCrawler:
                     self.visited.add(current_url)
                     
                     # Extract page data
-                    title, meta_description, h1_tags = self.extract_page_data(soup)
-                    self.save_page_data_to_db(current_url, title, meta_description, h1_tags)
+                    title, meta_description, h1_tags, links, images, tables = self.extract_page_data(soup)
+                    self.save_page_data_to_db(current_url, title, meta_description, h1_tags, links, images, tables)
                     
                     # Extract and enqueue new links
                     for link in soup.find_all('a', href=True):
@@ -109,5 +124,5 @@ class WebCrawler:
         self.conn.close()
 
 # Example usage
-crawler = WebCrawler(base_url="https://google.com", max_pages=10)
+crawler = WebCrawler(base_url="https://example.com", max_pages=10)
 crawler.crawl()
