@@ -8,12 +8,17 @@ def display_visited_sites():
         cursor = conn.cursor()
         
         # Query to select all data from visited_sites
-        cursor.execute('SELECT id, url, title, meta_description, h1_tags, timestamp FROM visited_sites ORDER BY id')
+        cursor.execute('''
+            SELECT id, url, title, meta_description, h1_tags, links, images, tables, timestamp 
+            FROM visited_sites 
+            ORDER BY id
+        ''')
         rows = cursor.fetchall()
         
         if rows:
-            print(f"{'ID':<5} {'URL':<50} {'Title':<30} {'Meta Description':<50} {'H1 Tags':<50} {'Timestamp'}")
-            print("=" * 200)
+            # Define headers for display
+            print(f"{'ID':<5} {'URL':<50} {'Title':<30} {'Meta Description':<50} {'H1 Tags':<50} {'Links':<30} {'Images':<30} {'Tables':<30} {'Timestamp'}")
+            print("=" * 250)
             for row in rows:
                 # Replace None with empty string or placeholder
                 id = row[0]
@@ -21,8 +26,11 @@ def display_visited_sites():
                 title = row[2] or "N/A"
                 meta_description = row[3] or "N/A"
                 h1_tags = row[4] or "N/A"
-                timestamp = row[5] or "N/A"
-                print(f"{id:<5} {url:<50} {title:<30} {meta_description:<50} {h1_tags:<50} {timestamp}")
+                links = (row[5] or "N/A")[:30]  # Truncate long links for display
+                images = (row[6] or "N/A")[:30]  # Truncate long image lists for display
+                tables = (row[7] or "N/A")[:30]  # Truncate long table texts for display
+                timestamp = row[8] or "N/A"
+                print(f"{id:<5} {url:<50} {title:<30} {meta_description:<50} {h1_tags:<50} {links:<30} {images:<30} {tables:<30} {timestamp}")
         else:
             print("No data found in the database.")
         
@@ -37,7 +45,11 @@ def export_to_csv():
         cursor = conn.cursor()
         
         # Query to select all data from visited_sites
-        cursor.execute('SELECT id, url, title, meta_description, h1_tags, timestamp FROM visited_sites ORDER BY id')
+        cursor.execute('''
+            SELECT id, url, title, meta_description, h1_tags, links, images, tables, timestamp 
+            FROM visited_sites 
+            ORDER BY id
+        ''')
         rows = cursor.fetchall()
         
         if rows:
@@ -46,7 +58,7 @@ def export_to_csv():
             with open(csv_file, mode='w', newline='', encoding='utf-8') as file:
                 writer = csv.writer(file)
                 # Write header
-                writer.writerow(['ID', 'URL', 'Title', 'Meta Description', 'H1 Tags', 'Timestamp'])
+                writer.writerow(['ID', 'URL', 'Title', 'Meta Description', 'H1 Tags', 'Links', 'Images', 'Tables', 'Timestamp'])
                 # Write rows, replacing None with "N/A"
                 writer.writerows([[col if col is not None else "N/A" for col in row] for row in rows])
             print(f"Data successfully exported to {csv_file}")
