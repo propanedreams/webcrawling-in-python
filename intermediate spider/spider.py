@@ -1,9 +1,13 @@
 import sqlite3
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin, urlparse, urlsplit, urlunsplit
 from urllib.robotparser import RobotFileParser
 from time import sleep
+from concurrent.futures import ThreadPoolExecutor
+import logging
+import argparse
+import hashlib
 
 class WebCrawler:
     def __init__(self, base_url, max_pages=10):
