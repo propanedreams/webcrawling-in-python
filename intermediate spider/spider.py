@@ -9,20 +9,14 @@ import logging
 import argparse
 import hashlib
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, filename="crawler.log", filemode="a",
-                    format="%(asctime)s - %(levelname)s - %(message)s")
+
 
 class WebCrawler:
-    HEADERS = {'User-Agent': 'MyWebCrawler/1.0 (+https://example.com/contact)'}
-    CRAWL_DELAY = 1  # Default crawl delay in seconds
-
-    def __init__(self, base_url, max_pages=10, max_workers=5):
+    def __init__(self, base_url, max_pages=10):
         self.base_url = base_url
         self.max_pages = max_pages
-        self.max_workers = max_workers
         self.visited = set()
-        self.to_visit = [self.normalize_url(base_url)]
+        self.to_visit = [base_url]
         self.robot_parsers = {}  # Cache for robot parsers
         self.conn = self.init_db()  # Initialize SQLite database
 
@@ -42,10 +36,8 @@ class WebCrawler:
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         ''')
-        cursor.execute('CREATE INDEX IF NOT EXISTS idx_url ON visited_sites(url)')
         conn.commit()
         return conn
-
 
     def save_page_data_to_db(self, url, title, meta_description, h1_tags, links, images, tables):
         try:
