@@ -1,3 +1,23 @@
 2024-12-17 20:56:01,717 - INFO - Crawling: https://example.com
 2024-12-17 20:56:02,159 - INFO - Saved page data: https://example.com
 2024-12-17 20:56:03,160 - INFO - Crawled 1 pages.
+2024-12-17 20:59:50,244 - INFO - Saved page data: https://example.com
+2024-12-17 20:59:52,220 - INFO - Saved page data: https://www.iana.org/domains/example
+2024-12-17 20:59:53,556 - INFO - Saved page data: https://www.iana.org/
+2024-12-17 20:59:54,896 - INFO - Saved page data: https://www.iana.org/domains
+2024-12-17 20:59:57,375 - INFO - Saved page data: https://www.iana.org/protocols
+2024-12-17 20:59:59,907 - INFO - Saved page data: https://www.iana.org/numbers
+2024-12-17 21:00:01,245 - INFO - Saved page data: https://www.iana.org/about
+2024-12-17 21:00:02,699 - INFO - Saved page data: https://www.iana.org/go/rfc2606
+2024-12-17 21:00:04,135 - INFO - Saved page data: https://www.iana.org/go/rfc6761
+2024-12-17 21:00:05,490 - INFO - Saved page data: https://www.iana.org/domains/reserved
+2024-12-17 21:00:06,835 - INFO - Saved page data: https://www.iana.org/domains/root
+2024-12-17 21:00:08,171 - INFO - Saved page data: https://www.iana.org/domains/int
+2024-12-17 21:00:09,507 - INFO - Saved page data: https://www.iana.org/domains/arpa
+2024-12-17 21:00:14,563 - INFO - Saved page data: https://www.iana.org/domains/idn-tables
+2024-12-17 21:00:18,676 - INFO - Saved page data: https://www.iana.org/abuse
+2024-12-17 21:00:20,094 - INFO - Saved page data: https://www.iana.org/time-zones
+2024-12-17 21:00:21,420 - INFO - Saved page data: https://www.iana.org/performance
+2024-12-17 21:00:23,345 - INFO - Saved page data: https://www.iana.org/reports
+2024-12-17 21:00:25,313 - INFO - Saved page data: https://www.iana.org/reviews
+2024-12-17 21:00:26,671 - INFO - Saved page data: https://www.iana.org/about/excellence

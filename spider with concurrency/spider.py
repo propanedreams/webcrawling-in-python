@@ -132,13 +132,48 @@ class WebCrawler:
         sleep(self.CRAWL_DELAY)
 
     def crawl(self):
-        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-            while self.to_visit and len(self.visited) < self.max_pages:
-                current_url = self.to_visit.pop(0)
-                executor.submit(self.crawl_page, current_url)
+        while self.to_visit and len(self.visited) < self.max_pages:
+            current_url = self.to_visit.pop(0)
+            if current_url in self.visited:
+                continue
+            
+            if not self.is_allowed_by_robots(current_url):
+                print(f"Blocked by robots.txt: {current_url}")
+                continue
+            
+            print(f"Crawling: {current_url}")
+            try:
+                response = requests.get(current_url)
+                if response.status_code == 200:
+                    soup = BeautifulSoup(response.text, 'html.parser')
+                    self.visited.add(current_url)
+                    
+                    # Extract and save page data
+                    title, meta_description, h1_tags, links, images, tables = self.extract_page_data(soup)
+                    self.save_page_data_to_db(current_url, title, meta_description, h1_tags, links, images, tables)
+                    
+                    # Discover new links and add them to the queue
+                    for link in soup.find_all('a', href=True):
+                        full_url = urljoin(current_url, link['href'])  # Ensure absolute URL
+                        parsed_full_url = urlparse(full_url)
 
-        logging.info(f"Crawled {len(self.visited)} pages.")
+                        # Filter out duplicate and invalid URLs
+                        if full_url not in self.visited and full_url not in self.to_visit:
+                            if parsed_full_url.scheme in ["http", "https"]:  # Ensure valid URL scheme
+                                self.to_visit.append(full_url)
+                                print(f"Found new link: {full_url}")  # Debugging
+
+                else:
+                    print(f"Failed to fetch page: {current_url} (Status code: {response.status_code})")
+
+            except Exception as e:
+                print(f"Error crawling {current_url}: {e}")
+            
+            sleep(1)  # Politeness delay
+            
+        print(f"\nCrawl Summary: Crawled {len(self.visited)} pages.")
         self.conn.close()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Web Crawler with SQLite Storage")
