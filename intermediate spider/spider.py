@@ -9,6 +9,10 @@ import logging
 import argparse
 import hashlib
 
+# Configure logging
+logging.basicConfig(level=logging.INFO, filename="crawler.log", filemode="a",
+                    format="%(asctime)s - %(levelname)s - %(message)s")
+
 class WebCrawler:
     def __init__(self, base_url, max_pages=10):
         self.base_url = base_url
