@@ -27,7 +27,7 @@ class WebCrawler:
         self.conn = self.init_db()  # Initialize SQLite database
 
     def init_db(self):
-        conn = sqlite3.connect('visited_sites.db')
+        conn = sqlite3.connect('visited_sites.db', check_same_thread=False)  # Allow use across threads
         cursor = conn.cursor()
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS visited_sites (
@@ -42,20 +42,26 @@ class WebCrawler:
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         ''')
-        cursor.execute('CREATE INDEX IF NOT EXISTS idx_url ON visited_sites(url)')
         conn.commit()
         return conn
 
     def save_page_data_to_db(self, url, title, meta_description, h1_tags, links, images, tables):
         try:
-            cursor = self.conn.cursor()
+            conn = sqlite3.connect('visited_sites.db')
+            cursor = conn.cursor()
+
             cursor.execute('''
                 INSERT OR IGNORE INTO visited_sites (url, title, meta_description, h1_tags, links, images, tables) 
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             ''', (url, title, meta_description, h1_tags, links, images, tables))
-            self.conn.commit()
+            
+            conn.commit()
+            conn.close()
+            logging.info(f"Saved page data: {url}")
         except sqlite3.Error as e:
             logging.error(f"Database error while saving {url}: {e}")
+
+
 
     def fetch_page(self, url):
         try:
