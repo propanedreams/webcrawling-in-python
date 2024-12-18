@@ -2,3 +2,4 @@
 .venv
 visited_sites.db
 visited_sites.csv
+crawler.log
