@@ -1,5 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin, urlparse
+import csv
+import time
 
 class FocusedCrawler:
     def __init__(self, base_url, max_pages=10):
