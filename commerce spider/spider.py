@@ -56,6 +56,7 @@ class EnhancedFocusedCrawler:
     def extract_product_data(self, soup):
         """Extracts product data."""
         product_list = []
+        #make a list for each element which is needed, ; product = bunch of generic tags used for it, iterate untill value hit
         for product in soup.find_all('div', class_='product-item'):
             name = product.find('h2', class_='product-name').get_text(strip=True) if product.find('h2', class_='product-name') else "No name"
             price = product.find('span', class_='price').get_text(strip=True) if product.find('span', class_='price') else "No price"
