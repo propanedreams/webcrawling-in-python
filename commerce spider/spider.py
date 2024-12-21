@@ -36,7 +36,6 @@ class EnhancedFocusedCrawler:
         """Checks robots.txt rules."""
         parsed_url = urlparse(url)
         domain = f"{parsed_url.scheme}://{parsed_url.netloc}"
-
         if domain not in self.robot_parsers:
             robots_url = urljoin(domain, "/robots.txt")
             parser = RobotFileParser()
@@ -47,7 +46,6 @@ class EnhancedFocusedCrawler:
             except Exception as e:
                 print(f"Error reading robots.txt from {robots_url}: {e}")
                 self.robot_parsers[domain] = None
-
         parser = self.robot_parsers.get(domain)
         if parser:
             return parser.can_fetch("*", url)  # "*" matches any user-agent
@@ -77,7 +75,6 @@ class EnhancedFocusedCrawler:
             url, depth = self.to_visit.pop(0)
             if url in self.visited or depth > self.max_depth:
                 continue
-
             # Check robots.txt
             if not self.is_allowed_by_robots(url):
                 print(f"Blocked by robots.txt: {url}")
@@ -106,7 +103,6 @@ class EnhancedFocusedCrawler:
         # Save the scraped data to a CSV file
         self.save_data_to_csv("scraped_products.csv")
         print(f"Crawling finished. Scraped {len(self.scraped_data)} products. Data saved to 'scraped_products.csv'.")
-
 # Example usage
 crawler =  EnhancedFocusedCrawler(base_url="https://elevatedfaith.com/", max_pages=5)
 crawler.crawl()
