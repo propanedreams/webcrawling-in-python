@@ -16,6 +16,7 @@ class EnhancedFocusedCrawler:
         self.robot_parsers = {}  # Cache for robot parsers
 
     def fetch_page(self, url):
+        """Fetch the HTML content of a page."""
         try:
             response = requests.get(url, timeout=5)
             response.raise_for_status()
@@ -25,7 +26,7 @@ class EnhancedFocusedCrawler:
             return None
 
     def save_data_to_csv(self, filename):
-        """Saves scraped data to a CSV file."""
+        """Save scraped data to a CSV file."""
         keys = ["name", "price", "rating", "availability", "description"]
         with open(filename, 'w', newline='', encoding='utf-8') as file:
             writer = csv.DictWriter(file, fieldnames=keys)
@@ -33,7 +34,7 @@ class EnhancedFocusedCrawler:
             writer.writerows(self.scraped_data)
 
     def is_allowed_by_robots(self, url):
-        """Checks robots.txt rules."""
+        """Check if the URL is allowed to be crawled based on robots.txt."""
         parsed_url = urlparse(url)
         domain = f"{parsed_url.scheme}://{parsed_url.netloc}"
         if domain not in self.robot_parsers:
@@ -52,15 +53,30 @@ class EnhancedFocusedCrawler:
         return True  # Assume allowed if robots.txt is not found or fails to load
 
     def extract_product_data(self, soup):
-        """Extracts product data."""
+        """Extract product data from the page."""
         product_list = []
-        #make a list for each element which is needed, ; product = bunch of generic tags used for it, iterate untill value hit
-        for product in soup.find_all('div', class_='product-item'):
-            name = product.find('h2', class_='product-name').get_text(strip=True) if product.find('h2', class_='product-name') else "No name"
-            price = product.find('span', class_='price').get_text(strip=True) if product.find('span', class_='price') else "No price"
-            rating = product.find('div', class_='rating').get_text(strip=True) if product.find('div', class_='rating') else "No rating"
-            availability = product.find('span', class_='availability').get_text(strip=True) if product.find('span', class_='availability') else "No availability"
-            description = product.find('p', class_='description').get_text(strip=True) if product.find('p', class_='description') else "No description"
+        # Adjust selectors based on the target site's HTML structure.
+        product_containers = soup.find_all('div', class_='grid-product__content')
+        for product in product_containers:
+            # Extract name
+            name = product.find('h2').get_text(strip=True) if product.find('h2') else "No name"
+
+            # Extract price
+            price_element = product.find('div', class_='grid-product__price')
+            price = price_element.get_text(strip=True) if price_element else "No price"
+
+            # Extract rating
+            rating_element = product.find('span', class_='stamped-badge')
+            rating = rating_element['data-rating'] if rating_element and rating_element.has_attr('data-rating') else "No rating"
+
+            # Extract availability (if applicable)
+            availability = "In Stock"  # Adjust logic if availability is indicated differently on the site.
+
+            # Extract description (optional; modify as needed)
+            description_element = product.find('p', class_='description')
+            description = description_element.get_text(strip=True) if description_element else "No description"
+
+            # Append the extracted product data to the list
             product_list.append({
                 "name": name,
                 "price": price,
@@ -71,6 +87,7 @@ class EnhancedFocusedCrawler:
         return product_list
 
     def crawl(self):
+        """Crawl the website and extract product data."""
         while self.to_visit and len(self.visited) < self.max_pages:
             url, depth = self.to_visit.pop(0)
             if url in self.visited or depth > self.max_depth:
@@ -103,6 +120,7 @@ class EnhancedFocusedCrawler:
         # Save the scraped data to a CSV file
         self.save_data_to_csv("scraped_products.csv")
         print(f"Crawling finished. Scraped {len(self.scraped_data)} products. Data saved to 'scraped_products.csv'.")
+
 # Example usage
-crawler =  EnhancedFocusedCrawler(base_url="https://elevatedfaith.com/", max_pages=5)
+crawler = EnhancedFocusedCrawler(base_url="https://elevatedfaith.com/", max_pages=5)
 crawler.crawl()
