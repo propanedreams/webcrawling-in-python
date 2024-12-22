@@ -53,6 +53,7 @@ class EnhancedFocusedCrawler:
         return True  # Assume allowed if robots.txt is not found or fails to load
 
     def extract_product_data(self, soup):
+        #todo ;; add list of known dataholders to check for each page, iterate through list until hitting the correct dataholder or skip
         """Extract product data from the page."""
         product_list = []
         # Adjust selectors based on the target site's HTML structure.
