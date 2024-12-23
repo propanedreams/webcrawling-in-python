@@ -123,5 +123,5 @@ class EnhancedFocusedCrawler:
         print(f"Crawling finished. Scraped {len(self.scraped_data)} products. Data saved to 'scraped_products.csv'.")
 
 # Example usage
-crawler = EnhancedFocusedCrawler(base_url="https://elevatedfaith.com/", max_pages=5)
+crawler = EnhancedFocusedCrawler(base_url="https://elevatedfaith.com/", max_pages=10)
 crawler.crawl()
